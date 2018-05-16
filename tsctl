@@ -57,7 +57,6 @@ class DropDataBaseTables(Command):
             sys.stdout.write(u'All tables dropped. Database is now empty.\n')
             drop_all()
 
-
 class AddUser(Command):
     """Create a new Timesketch user."""
     option_list = (
@@ -89,6 +88,19 @@ class AddUser(Command):
         db_session.commit()
         sys.stdout.write(u'User {0:s} created/updated\n'.format(username))
 
+class DisableUser(Command):
+    """Disables a new Timesketch user."""
+    option_list = (
+        Option(u'--username', u'-u', dest=u'username', required=True), )
+
+    def __init__(self):
+        super(DisableUser, self).__init__()
+
+    # pylint: disable=arguments-differ, method-hidden
+    def run(self, username):
+        """Disables the user."""
+        raise NotImplementedError
+        sys.stdout.write(u'User {0:s} disabled\n'.format(username))
 
 class AddGroup(Command):
     """Create a new Timesketch group."""
@@ -495,6 +507,7 @@ if __name__ == '__main__':
     # Setup Flask-script command manager and register commands.
     shell_manager = Manager(create_app)
     shell_manager.add_command(u'add_user', AddUser())
+    shell_manager.add_command(u'disable_user', DisableUser())
     shell_manager.add_command(u'add_group', AddGroup())
     shell_manager.add_command(u'manage_group', GroupManager())
     shell_manager.add_command(u'add_index', AddSearchIndex())
