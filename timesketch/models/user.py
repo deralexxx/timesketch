@@ -82,18 +82,28 @@ class User(UserMixin, BaseModel):
         password_hash = generate_password_hash(plaintext, rounds)
         self.password = unicode(password_hash)
 
-    def check_password(self, plaintext):
-        """Check a plaintext password against a stored password hash.
+    def set_user_active(self, status):
+        """Set the status of a user to true or false to activeta or deactivate the user
 
         Args:
-            plaintext: A plaintext password
+            status: true / false
 
         Returns:
-            A boolean value indicating if the plaintext password matches the
-            stored password hash.
+            A boolean value indicating if the user is active or not active
         """
-        return check_password_hash(self.password, plaintext)
+        raise NotImplementedError
+        #return check_password_hash(self.password, plaintext)
 
+      def set_password(self, plaintext, rounds=12):
+        """Sets the password for the user. The password hash is created with the
+        Bcrypt python library (http://www.mindrot.org/projects/py-bcrypt/).
+
+        Args:
+            plaintext: The plaintext password to hash
+            rounds: Number of rounds to use for the bcrypt hashing
+        """
+        password_hash = generate_password_hash(plaintext, rounds)
+        self.password = unicode(password_hash)
 
 class Group(LabelMixin, StatusMixin, BaseModel):
     """Implements the Group model."""
