@@ -2,9 +2,24 @@
 
 The api_client is part of timesketch package and can be used to interact with the API of timesketch.
 
+The examples listed will run against the demo page of timesketch.
+
 # Authentication
 
 It is always needed to first do authentication against your timesktch instance
+
+Initializes the TimesketchApi object.
+
+    Args:
+        host_uri: URI to the Timesketch server (https://<server>/).
+        username: User username.
+        password: User password.
+        verify: Verify server SSL certificate.
+        auth_mode: The authentication mode to use. Defaults to 'timesketch'
+            Supported values are 'timesketch' (Timesketch login form) and
+            'http-basic' (HTTP Basic authentication).
+
+
 
 ## Example
 
@@ -18,6 +33,14 @@ client = TimesketchApi(u'https://demo.timesketch.org', u'demo',u'demo')
 
 ## get
 
+Get a sketch.
+
+    Args:
+        sketch_id: Primary key ID of the sketch.
+
+    Returns:
+        Instance of a Sketch object.
+
 Example:
 
 ```python
@@ -29,6 +52,44 @@ print(sketch.name)
 Will give you:
 ```
 The Greendale incident - 2019
+```
+
+## create
+
+Create a new sketch.
+
+    Args:
+        name: Name of the sketch.
+        description: Description of the sketch.
+
+    Returns:
+        Instance of a Sketch object.
+
+Example:
+```python
+from api_client.python.timesketch_api_client.client import TimesketchApi
+from prettytable import PrettyTable
+
+client = TimesketchApi(u'https://demo.timesketch.org',u'demo',u'demo')
+client.create_sketch("This is a test")
+sketches = client.list_sketches()
+t = PrettyTable(['id', 'Name'])
+for current_sketch in sketches:
+    t.add_row([current_sketch.id, current_sketch.name])
+print(t)
+```
+
+Will give you:
+```
++-----+-------------------------------+
+|  id |              Name             |
++-----+-------------------------------+
+| 353 |         This is a test        |
+| 285 |          MUSCTF 2019          |
+| 238 | The Greendale incident - 2019 |
+| 130 |      test1Untitled sketch     |
+|  3  |  The Greendale investigation  |
++-----+-------------------------------+
 ```
 
 ## explore
@@ -79,9 +140,12 @@ Will give you
 
 ```
 
-
-
 ## list sketches
+
+Get list of all open sketches that the user has access to.
+
+    Returns:
+        List of Sketch objects instances.
 
 Example:
 
@@ -128,9 +192,7 @@ The Greendale incident - 2019
 |  id |     Name    |
 +-----+-------------+
 | 189 |  registrar  |
-|     |             |
 | 190 | student-pc1 |
-|     |             |
 | 198 |     dc1     |
 +-----+-------------+
 ```
@@ -139,10 +201,132 @@ The Greendale incident - 2019
 
 ### get
 
+Get a searchindex.
+
+    Args:
+        searchindex_id: Primary key ID of the searchindex.
+
+    Returns:
+        Instance of a SearchIndex object.
+
 Example:
+
+```python
+from api_client.python.timesketch_api_client.client import TimesketchApi
+from prettytable import PrettyTable
+
+client = TimesketchApi(u'https://demo.timesketch.org',u'demo',u'demo')
+search_index = client.get_searchindex(22)
+
+t = PrettyTable(['id','name'])
+t.add_row([search_index.id,search_index.name])
+
+print(t)
+```
+
+Will give you:
+```
++----+-------------+
+| id |     name    |
++----+-------------+
+| 22 | MUSCTF-2019 |
++----+-------------+
+```
 
 ### get_or_create
 
+Create a new searchindex.
+
+    Args:
+        searchindex_name: Name of the searchindex in Timesketch.
+        es_index_name: Name of the index in Elasticsearch.
+        public: Boolean indicating if the searchindex should be public.
+
+    Returns:
+        Instance of a SearchIndex object and a boolean indicating if the
+        object was created.
+
 Example:
 
+### list
 
+```python
+from api_client.python.timesketch_api_client.client import TimesketchApi
+from prettytable import PrettyTable
+
+client = TimesketchApi(u'https://demo.timesketch.org',u'demo',u'demo')
+search_indices = client.list_searchindices()
+
+t = PrettyTable(['id','name'])
+for current_search_index in search_indices:
+    t.add_row([current_search_index.id,current_search_index.name])
+
+print(t)
+```
+
+will give you
+```
++----+-------------+
+| id |     name    |
++----+-------------+
+| 18 |     test    |
+| 2  |     dc1     |
+| 1  | student-pc1 |
+| 3  |  registrar  |
+| 22 | MUSCTF-2019 |
++----+-------------+
+```
+
+# views
+
+Views are always defined per sketch.
+
+## list
+List all saved views for this sketch.
+
+    Returns:
+        List of views (instances of View objects)
+
+Example:
+```python
+from api_client.python.timesketch_api_client.client import TimesketchApi
+from prettytable import PrettyTable
+
+client = TimesketchApi(u'https://demo.timesketch.org',u'demo',u'demo')
+sketch = client.get_sketch(238)
+views = sketch.list_views()
+
+t = PrettyTable(['id','name'])
+for current_view in views:
+    t.add_row([current_view.id,current_view.name])
+
+print(t)
+
+```
+
+Will give you:
+```
++------+---------------------------------------------------+
+|  id  |                        name                       |
++------+---------------------------------------------------+
+| 2012 |  [phishy_domains] Phishy Domains, excl. whitelist |
+| 2010 |          [browser_search] Browser Search          |
+| 2011 |          [phishy_domains] Phishy Domains          |
+| 2035 |               Windows network logins              |
+| 2616 |                       Antti                       |
+| 2185 |                  This is the view                 |
+| 2214 |                 Windows Link Files                |
+| 2213 |               Windows network logins              |
+| 2293 |                         hh                        |
+| 2344 |                        test                       |
+| 2855 |               Windows network logins              |
+| 2212 |               Windows network logins              |
+| 2601 | An operation was attempted on a privileged object |
+| 2603 | An operation was attempted on a privileged object |
+| 2605 | An operation was attempted on a privileged object |
+| 2602 | An operation was attempted on a privileged object |
+| 2604 | An operation was attempted on a privileged object |
++------+---------------------------------------------------+
+
+```
+    
