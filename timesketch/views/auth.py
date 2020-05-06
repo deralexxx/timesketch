@@ -62,6 +62,7 @@ SCOPES = [
 
 @auth_views.route('/login/', methods=['GET', 'POST'])
 def login():
+    print("Timesketch rocks")
     """Handler for the login page view.
 
     There are three ways of authentication.
