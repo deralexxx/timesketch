@@ -1,5 +1,9 @@
 ### Developers guide
 
+#### API
+
+See [Developers-API-Guide](Developers-API-Guide.md)
+
 #### Python dependencies
 We use pip-tools and virtualenv for development. Pip-tools must be installed
 inside a virtualenv, installing it system-wide will cause issues.

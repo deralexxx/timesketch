@@ -414,6 +414,28 @@ class TimesketchApi(object):
             sketches.append(sketch_obj)
         return sketches
 
+    def merge_searchindex(self,
+                                  searchindex_name=None,searchindex_name2=None,
+                                  sketch_id=None,
+                                  public=False):
+        """Create a new searchindex.
+
+        Args:
+            searchindex_name: Name of the searchindex in Timesketch.
+            searchindex_name2: Name of the searchindex in Timesketch.
+            sketch_id: Name of the index in Elasticsearch.
+            public: Boolean indicating if the searchindex should be public.
+
+        Returns:
+            Instance of a SearchIndex object and a boolean indicating if the
+            object was created.
+        """
+
+        resource_uri = 'sketches'
+        resource_url = '{0:s}/{1:s}/{2:s}/merge_timelines/{3:s}/{4:s}'.format(self.api_root, resource_uri,sketch_id,searchindex_name,searchindex_name2)
+        response = self.session.post(resource_url)
+        return response.text
+
     def get_searchindex(self, searchindex_id):
         """Get a searchindex.
 

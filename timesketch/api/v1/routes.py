@@ -45,6 +45,7 @@ from .resources import StoryResource
 from .resources import QueryResource
 from .resources import CountEventsResource
 from .resources import TimelineResource
+from .resources import TimelineMerge
 from .resources import TimelineListResource
 from .resources import SearchIndexListResource
 from .resources import SearchIndexResource
@@ -87,6 +88,7 @@ API_ROUTES = [
     (CountEventsResource, '/sketches/<int:sketch_id>/count/'),
     (TimelineListResource, '/sketches/<int:sketch_id>/timelines/'),
     (TimelineResource, '/sketches/<int:sketch_id>/timelines/<int:timeline_id>/'),
+    (TimelineMerge, '/sketches/<int:sketch_id>/merge_timelines/<string:timeline_index_destination>/<string:timeline_index_source>'),
     (SearchIndexListResource, '/searchindices/'),
     (SearchIndexResource, '/searchindices/<int:searchindex_id>/'),
     (GraphResource, '/sketches/<int:sketch_id>/explore/graph/'),

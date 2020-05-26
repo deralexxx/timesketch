@@ -2864,6 +2864,69 @@ class TimelineResource(ResourceMixin, Resource):
         db_session.commit()
         return HTTP_STATUS_CODE_OK
 
+class TimelineMerge(ResourceMixin, Resource):
+    """Resource to merge two timelines."""
+
+    @login_required
+    def post(self, sketch_id, timeline_index_destination, timeline_index_source):
+        """Handles POST request to the resource. Important to note that ACLs need to be considered as well.
+
+            Data from source will be copied to destination.
+            Source will be deleted after that.
+
+        Args:
+            timeline_index_destination: Integer primary key for a sketch database model
+            timeline_index_source: Integer primary key for a timeline database model
+        """
+
+        timeline_destination = Timeline.query.get(timeline_index_destination)
+        timeline_source = Timeline.query.get(timeline_index_source)
+
+        # Copy the data
+        try:
+            resp = self.datastore.client.reindex(
+                body={
+                    "source": {"index": timeline_source.searchindex.index_name},
+                    "dest": {"index": timeline_destination.searchindex.index_name},
+                },
+            )
+            print(resp)
+        except Exception as e:  # pylint: disable=broad-except
+            abort(
+                HTTP_STATUS_CODE_BAD_REQUEST,
+                'Failed to merge ({0!s})'.format(e))
+
+        return HTTP_STATUS_CODE_OK # for now stop here, the expectation is done, all events are copied to the other index
+
+
+        # delete the ES index
+        #tlres = TimelineResource.get(sketch_id=sketch_id,timeline_id=timeline_index_source)
+        self.datastore.client.indices.delete(index=timeline_destination.searchindex.index_name) # that will delete the index
+
+        #TimelineResource.delete(sketch_id=sketch_id,timeline_id=timeline_index_source) # does not work
+
+        # Delete the DB stuff
+        print("in db I am going to delete: "+timeline_source)
+        db_session.delete(timeline_source) #maybe that is not the index name but the id
+        db_session.commit()
+        print("In datastore, I am going to delete: "+timeline_destination.searchindex.index_name)
+
+        # delete the DB entry
+        # TODO: ACLs
+
+        sketch = Sketch.query.get_with_acl(1)
+        timeline = Timeline.query.get(1)
+        print("asdasd")
+        print(timeline.searchindex.index_name)
+
+        # for the beginning, lets assume that the ACLS of the main index will be kept to keep it simple.
+
+        # TODO: remove Database entry that is obsolute
+
+        return HTTP_STATUS_CODE_OK
+
+
+
 
 class GraphResource(ResourceMixin, Resource):
     """Resource to get result from graph query."""
