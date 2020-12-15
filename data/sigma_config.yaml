@@ -60,6 +60,11 @@ logsources:
       source_name:
         - "Microsoft-Windows-Security-Auditing"
         - "Microsoft-Windows-Eventlog"
+  service_windows_system:
+    service: system
+    conditions:
+      source_name:
+        - "Microsoft-Windows-Eventlog"
   powershell:
     service: powershell
     conditions:
@@ -79,4 +84,5 @@ fieldmappings:
     Service: xml_string
     Message: xml_string
     keywords: xml_string # that might be wrong, only introduced during powershell stuff
+    Source: message
 
